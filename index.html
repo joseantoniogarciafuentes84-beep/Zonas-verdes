@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Zonas Verdes">
+<meta name="theme-color" content="#0F6E56">
+<title>Diagnostico Zonas Verdes - Merida 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#f4f6f4;font-family:'DM Sans',sans-serif;color:#1a2e1a;font-size:15px}
+.app{height:100%;display:flex;flex-direction:column;max-width:480px;margin:0 auto;background:#fff;position:relative;overflow:hidden}
+.topbar{background:#0f6e56;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;padding-top:max(env(safe-area-inset-top,0px),12px)}
+.topbar-back{background:rgba(255,255,255,.18);border:none;color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;flex-shrink:0}
+.topbar-title{flex:1}
+.topbar-title h1{font-size:15px;font-weight:600}
+.topbar-title p{font-size:12px;opacity:.7;margin-top:1px}
+.topbar-badge{background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;font-family:'DM Mono',monospace}
+.pbar{height:3px;background:#9fe1cb;flex-shrink:0}
+.pfill{height:100%;background:#1d9e75;transition:width .35s ease}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:96px}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid rgba(15,110,86,.12);padding:12px 16px;padding-bottom:max(env(safe-area-inset-bottom,0px),12px);display:flex;gap:10px}
+.bbtn{flex:1;height:48px;border:1.5px solid rgba(15,110,86,.3);border-radius:12px;background:transparent;color:#4a6454;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer}
+.gbtn{flex:2;height:48px;border:none;border-radius:12px;background:#1d9e75;color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(29,158,117,.3)}
+.screen{display:none;height:100%;flex-direction:column}
+.screen.active{display:flex}
+.hero{background:linear-gradient(150deg,#0f6e56,#04342c);padding:24px 20px 28px;color:#fff;flex-shrink:0}
+.hero h1{font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.2;margin-top:8px}
+.hero p{font-size:13px;opacity:.65;margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px;flex-shrink:0}
+.scard{background:#f4f6f4;border-radius:12px;padding:14px;text-align:center;border:1px solid rgba(15,110,86,.1)}
+.scard .n{font-size:28px;font-weight:600;color:#1d9e75;font-family:'DM Mono',monospace;line-height:1}
+.scard .l{font-size:11px;color:#7a9484;margin-top:4px}
+.hscroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px 80px}
+.newbtn{width:100%;height:52px;background:#1d9e75;color:#fff;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(29,158,117,.35);margin-bottom:20px}
+.slabel{font-size:11px;font-weight:600;color:#7a9484;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.zrow{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border:1px solid rgba(15,110,86,.12);border-radius:12px;margin-bottom:8px;cursor:pointer}
+.zdot{width:8px;height:8px;border-radius:50%;background:#1d9e75;flex-shrink:0}
+.zinfo{flex:1}
+.zname{font-size:14px;font-weight:500}
+.zmeta{font-size:11px;color:#7a9484;margin-top:2px}
+.zchev{color:#7a9484;font-size:18px}
+.empty{text-align:center;padding:32px 16px;color:#7a9484;font-size:13px;line-height:1.6}
+.field{margin-bottom:20px}
+.flabel{display:block;font-size:13px;font-weight:500;color:#4a6454;margin-bottom:8px}
+.finput,.ftxtinp{width:100%;height:44px;padding:0 14px;border:1.5px solid rgba(15,110,86,.25);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:15px;color:#1a2e1a;outline:none}
+.finput:focus,.ftxtinp:focus{border-color:#1d9e75}
+.ftarea{width:100%;min-height:80px;padding:12px 14px;border:1.5px solid rgba(15,110,86,.25);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a2e1a;outline:none;resize:vertical}
+.ftarea:focus{border-color:#1d9e75}
+.scrow{display:flex;align-items:center;gap:8px}
+.sclbl{font-size:11px;color:#7a9484;width:28px}
+.scbtns{display:flex;gap:6px;flex:1}
+.scbtn{flex:1;height:38px;border:1.5px solid rgba(15,110,86,.2);border-radius:8px;background:#f4f6f4;font-family:'DM Mono',monospace;font-size:13px;color:#7a9484;cursor:pointer;transition:all .15s}
+.scbtn.on{background:#1d9e75;border-color:#1d9e75;color:#fff}
+.ynrow{display:flex;gap:8px}
+.ynbtn{flex:1;height:44px;border:1.5px solid rgba(15,110,86,.2);border-radius:8px;background:#f4f6f4;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:#1a2e1a;cursor:pointer;transition:all .15s}
+.ynbtn.ys{background:#e1f5ee;border-color:#1d9e75;color:#085041}
+.ynbtn.ns{background:#fcebeb;border-color:#a32d2d;color:#a32d2d}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:#f4f6f4;border:1.5px solid rgba(15,110,86,.2);border-radius:20px;padding:6px 13px;font-size:12px;font-weight:500;color:#4a6454;cursor:pointer;transition:all .15s;user-select:none}
+.chip.on{background:#e1f5ee;border-color:#1d9e75;color:#085041}
+.micbtn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:#f4f6f4;border:1.5px dashed rgba(15,110,86,.3);border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;color:#4a6454;margin-bottom:8px;transition:all .2s}
+.micbtn.rec{background:#fcebeb;border-color:#a32d2d;color:#a32d2d;border-style:solid}
+.mico{font-size:20px}
+.pgrid{display:flex;gap:8px;flex-wrap:wrap}
+.pthumb{width:72px;height:72px;border-radius:8px;object-fit:cover;border:1.5px solid rgba(15,110,86,.15)}
+.paddbtn{width:72px;height:72px;border-radius:8px;border:1.5px dashed rgba(15,110,86,.3);background:#f4f6f4;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:#7a9484}
+.zpill{background:#e1f5ee;border:1.5px solid #9fe1cb;border-radius:12px;padding:12px 14px;display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.zpinfo{flex:1}
+.zpbadge{background:#1d9e75;color:#fff;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:20px;display:inline-block;margin-bottom:4px}
+.zpnom{font-size:15px;font-weight:600;color:#085041}
+.zpbarrio{font-size:12px;color:#0f6e56;margin-top:2px}
+.zpsup{font-size:12px;color:#7a9484;margin-top:2px}
+.zpclear{background:none;border:none;color:#7a9484;cursor:pointer;font-size:20px;padding:0;line-height:1}
+.chlink{background:none;border:none;color:#1d9e75;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;padding:4px 0;margin-bottom:10px;text-decoration:underline;text-underline-offset:3px;display:block}
+.picker{border:1.5px solid rgba(15,110,86,.2);border-radius:12px;overflow:hidden;max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px}
+.pglabel{background:#f4f6f4;padding:6px 12px;font-size:10px;font-weight:600;color:#7a9484;text-transform:uppercase;letter-spacing:.07em;position:sticky;top:0;border-bottom:1px solid rgba(15,110,86,.1)}
+.pitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(15,110,86,.08);cursor:pointer;transition:background .1s}
+.pitem:last-child{border-bottom:none}
+.pitem:active,.pitem.on{background:#e1f5ee}
+.pnum{font-family:'DM Mono',monospace;font-size:11px;color:#7a9484;min-width:26px;font-weight:500}
+.pname{flex:1;font-size:13px;line-height:1.3}
+.psup{font-size:11px;color:#7a9484;white-space:nowrap}
+.swrap{position:relative;margin-bottom:8px}
+.swrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#7a9484;pointer-events:none}
+.swrap input{width:100%;height:42px;padding:0 12px 0 38px;border:1.5px solid rgba(15,110,86,.25);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a2e1a;outline:none}
+.swrap input:focus{border-color:#1d9e75}
+.hint{font-size:12px;color:#7a9484;margin-top:6px}
+.aibox{background:#e1f5ee;border:1.5px solid #9fe1cb;border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.aihdr{font-size:11px;font-weight:600;color:#0f6e56;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.aibox p{font-size:13px;color:#085041;line-height:1.6}
+.cblock{background:#fff;border:1px solid rgba(15,110,86,.12);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.cblktitle{font-size:11px;font-weight:600;color:#7a9484;text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.divider{border:none;border-top:1px solid rgba(15,110,86,.1);margin:12px 0}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{background:#faeeda;color:#ba7517;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500}
+.propitem{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;font-size:13px;line-height:1.4}
+.pbadge{border-radius:10px;padding:2px 8px;font-size:11px;font-weight:600;white-space:nowrap;margin-top:1px;flex-shrink:0}
+.pbalta{background:#fcebeb;color:#a32d2d}
+.pbmedia{background:#faeeda;color:#ba7517}
+.pbbaja{background:#e1f5ee;color:#0f6e56}
+.exrow{display:flex;gap:8px;margin-top:4px}
+.exbtn{flex:1;height:44px;border:1.5px solid rgba(15,110,86,.25);border-radius:8px;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:#1a2e1a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
+.exsave{background:#e1f5ee;border-color:#1d9e75;color:#085041}
+.smeta{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.smitem{font-size:12px;color:#4a6454}
+.dots{display:inline-flex;gap:5px}
+.dots span{width:6px;height:6px;border-radius:50%;background:#1d9e75;animation:dp 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{opacity:.2}40%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="app">
+<div id="s-home" class="screen active">
+  <div class="hero">
+    <div style="font-size:36px">&#127807;</div>
+    <h1>Diagnostico<br>Zonas Verdes</h1>
+    <p>Merida 2026 - Catalogo oficial municipal</p>
+  </div>
+  <div class="stats">
+    <div class="scard"><div class="n" id="stat-n">0</div><div class="l">Diagnosticadas</div></div>
+    <div class="scard"><div class="n">371+</div><div class="l">En catalogo</div></div>
+  </div>
+  <div class="hscroll">
+    <button class="newbtn" id="btn-nueva">+ Nueva zona</button>
+    <div class="slabel">Recientes</div>
+    <div id="zona-list"></div>
+  </div>
+</div>
+<div id="s-form" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" id="btn-back-form">&#8592;</button>
+    <div class="topbar-title"><h1 id="f-title">Seleccion de zona</h1><p id="f-sub">Paso 1 de 8</p></div>
+    <span class="topbar-badge" id="f-badge">1/8</span>
+  </div>
+  <div class="pbar"><div class="pfill" id="pfill" style="width:12%"></div></div>
+  <div class="scroll" id="f-content"></div>
+  <div class="bnav" id="f-nav"></div>
+</div>
+<div id="s-sum" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" id="btn-back-sum">&#8592;</button>
+    <div class="topbar-title"><h1>Diagnostico generado</h1><p id="sum-sub">Revision y exportacion</p></div>
+  </div>
+  <div class="scroll">
+    <div class="cblock" id="sum-meta"></div>
+    <div class="aibox" id="ai-box"><div class="aihdr">Analisis IA</div><div class="dots"><span></span><span></span><span></span></div></div>
+    <div class="cblock">
+      <div class="cblktitle">Problematicas detectadas</div>
+      <div id="sum-probs" class="tags"></div>
+      <div class="divider"></div>
+      <div class="cblktitle">Propuestas de mejora</div>
+      <div id="sum-props"></div>
+    </div>
+    <div class="exrow">
+      <button class="exbtn" id="btn-pdf">PDF</button>
+      <button class="exbtn" id="btn-csv">Excel</button>
+      <button class="exbtn exsave" id="btn-save">Guardar</button>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+var ZONAS=[{b:"Zona Centro",z:[{n:1,nom:"Parque Luis Chamizo",sup:1311},{n:2,nom:"Avda. Jose Fernandez Lopez",sup:1609},{n:3,nom:"Paseo de Roma",sup:2580},{n:4,nom:"Plaza de Roma",sup:990},{n:5,nom:"Plaza Meridas del Mundo",sup:1265},{n:6,nom:"Entorno Glorieta Augusto",sup:939},{n:7,nom:"Parque Centro Social El Barrio",sup:3600},{n:8,nom:"Jardines Grupo Renfe",sup:1500},{n:9,nom:"Zona nueva ajardinada en el Barrio",sup:900},{n:12,nom:"Parque Marquesa de Pinares",sup:2318},{n:16,nom:"Plaza de la Constitucion",sup:919},{n:18,nom:"Parque de la Rambla",sup:4059},{n:20,nom:"Parque Lopez de Ayala",sup:5414},{n:26,nom:"Jardines Alcazaba Arabe",sup:2552},{n:27,nom:"Parque MAM",sup:1814},{n:29,nom:"Jardines Correlon de los Frailes",sup:836},{n:31,nom:"Jardin Juan de Avalos",sup:1553},{n:36,nom:"Parque Madres de Mayo",sup:5088},{n:37,nom:"Jardines C/Safo",sup:966},{n:44,nom:"Entorno Plaza de Toros",sup:1946}]},{b:"Residencial Montealto",z:[{n:45,nom:"Zona Verde Manzana C/Castuera",sup:5082},{n:46,nom:"Zona verde Plazas Calle Talayuela",sup:1183},{n:47,nom:"Zonas verdes Acueducto Rabo de buey",sup:6685},{n:48,nom:"Zonas verdes Ctra. N-630",sup:5296}]},{b:"PIR La Calzada",z:[{n:49,nom:"Plaza de las Madres de la Plaza de Mayo",sup:3273},{n:50,nom:"Parque Junto Pasaje Rigoberta Menchu",sup:3159},{n:51,nom:"Zona sin ajardinada en C/Maruja Mayo",sup:5649},{n:52,nom:"Zona sin ajardinar en C/Dulce Chacon",sup:1174}]},{b:"Barriada San Juan",z:[{n:53,nom:"Parque entre C/Leyta y C/Santa Ana",sup:871}]},{b:"Barriada Tierno Galvan",z:[{n:55,nom:"Zona ajardinada",sup:572}]},{b:"Barriada San Agustin",z:[{n:56,nom:"Parque C/Llanos de Olivenza",sup:717},{n:57,nom:"Parque traseras La Corchera",sup:4058},{n:58,nom:"Parque en Avda. Juan Canet",sup:1229}]},{b:"Urbanizacion Monteadirem",z:[{n:59,nom:"Zona verde junto a cementerio",sup:18913},{n:60,nom:"Franja verde Avda. Via de la Plata",sup:10736}]},{b:"Zona Norte",z:[{n:61,nom:"Jardin entrada al cementerio",sup:2065},{n:62,nom:"Parque Junto al cementerio",sup:29350},{n:63,nom:"Jardines junto Avda. Via de la Plata",sup:15607},{n:64,nom:"Jardines Avda. Via de la Plata / Serrania de los Caballeros",sup:3994}]},{b:"Barriada La Corchera",z:[{n:65,nom:"Parque de la Corchera",sup:9220},{n:66,nom:"Calles peatonales de la Corchera",sup:324},{n:67,nom:"Zona verde C/Mirandilla",sup:285},{n:68,nom:"Zona verde C/Sancti-Spiritus",sup:308},{n:69,nom:"Zona verde C/Salvaleon",sup:199},{n:70,nom:"Mediana de la Ctra. al Corchera",sup:487}]},{b:"Barriada Los Milagros",z:[{n:71,nom:"Parque en C/Sierra de Tentudia",sup:933},{n:72,nom:"Parque los Milagros",sup:1364}]},{b:"Barriada Santa Eulalia",z:[{n:73,nom:"Parque de la Barriada",sup:1894},{n:74,nom:"Traseras de la Calle Platon",sup:2195},{n:75,nom:"Parque de la Barriada y zonas verdes",sup:544}]},{b:"Barriada Las Abadias",z:[{n:76,nom:"Parque junto a Calle Almendral",sup:8988},{n:77,nom:"Parque entre Calle Zarza Capilla y Avda. Emerita Augusta",sup:5518},{n:79,nom:"Jardin Ronda de los Emeritos",sup:2922},{n:80,nom:"Zona verde Ronda de los Emeritos",sup:1455},{n:84,nom:"Zona verde Ronda de los Emeritos - Via de la Plata",sup:309}]},{b:"Barriada San Bartolome",z:[{n:85,nom:"Jardin de la Avda. de las Abadias",sup:754},{n:87,nom:"Parque entre ferrocarril y Avda. de las Abadias",sup:3358},{n:88,nom:"Jardin C/Florencia Gil y C/Arenal de Pancaliente",sup:258},{n:89,nom:"Jardin entre C/Medea y C/Orestiada",sup:153}]},{b:"Zona La Chimena",z:[{n:90,nom:"Zonas verdes entre Avda. Emerita Augusta y C/Hoy diario",sup:2447},{n:91,nom:"Zona verde C/Hoy diario y C/Manuel Gil",sup:420},{n:92,nom:"Zona verde C/Hoy diario y ferrocarril",sup:572},{n:93,nom:"Zona verde Avda. Emerita Augusta y Recinto ferial",sup:761}]},{b:"Barriada San Lazaro",z:[{n:96,nom:"Zona verde Avda. de las Comunidades",sup:251},{n:97,nom:"Jardin C/Camino de la Magdalena",sup:831}]},{b:"Barriada Santa Catalina",z:[{n:98,nom:"Zonas verdes y Parque del Acueducto San Lazaro",sup:12860}]},{b:"Jardines del Hipodromo",z:[{n:99,nom:"Jardines del Hipodromo",sup:32696},{n:100,nom:"Zonas verdes acceso Urbanizacion Jardines del Hipodromo",sup:483}]},{b:"Zona Los Salesianos",z:[{n:101,nom:"Parque de los Salesianos",sup:16490},{n:102,nom:"Franja verde Avda. Juan Pablo II",sup:2750}]},{b:"La Antigua",z:[{n:103,nom:"Plaza de la Corraleta",sup:1294},{n:104,nom:"Zona verde entre Calle Valverde de Merida y Avda. Reina Sofia",sup:1706},{n:106,nom:"Zona verde Centro Social La Antigua",sup:725},{n:108,nom:"Mediana Avda. Juan Carlos I",sup:280}]},{b:"Barriada Ma Auxiliadora",z:[{n:110,nom:"Bulevar C/Juan Maluquer de Motes",sup:3499},{n:111,nom:"Parque C/Antonio Beltran Rodriguez",sup:3077}]},{b:"Los Bodegones",z:[{n:112,nom:"Zonas verdes C/Diego Munoz Torrero",sup:1147},{n:114,nom:"Plaza de los Escritores",sup:1616},{n:116,nom:"Parque en C/Baldomero Diaz de Entresoto",sup:2175},{n:117,nom:"Parque en C/Vicente Alexandre",sup:5629},{n:120,nom:"Parque Diocles",sup:4519},{n:121,nom:"Parque C/Tres de Abril",sup:1147},{n:122,nom:"Parque Puerta del Sur",sup:4791},{n:124,nom:"Parque Bodegones Sur",sup:28200}]},{b:"Plantonal de Vera",z:[{n:127,nom:"Franja verde C/Rey Agila I",sup:1774},{n:128,nom:"Zona verde C/Rey Eurico con C/Diacono Paulo",sup:557}]},{b:"Tres Casas",z:[{n:130,nom:"Parque C/Sta Teresa de Jornet",sup:1418}]},{b:"San Andres",z:[{n:131,nom:"Parque San Andres",sup:5903},{n:132,nom:"Zonas verdes C/Pablo Neruda",sup:782}]},{b:"Zona Sur",z:[{n:133,nom:"Parque Zona Sur",sup:2485},{n:136,nom:"Parque M. Paula Montal",sup:842},{n:137,nom:"Parque C/Anas con C/Aguadores",sup:1984},{n:138,nom:"Jardin C/Aguadores",sup:2372}]},{b:"El Prado",z:[{n:139,nom:"Talud El Prado C/Fermin Ramos",sup:4344},{n:140,nom:"Zona verde en C/Comarca Ribera del Tajo",sup:3375},{n:141,nom:"Parque en C/Comarca Ribera del Tajo",sup:2213},{n:143,nom:"Zona verde Avda. del Rio",sup:7361},{n:145,nom:"Zona verde Avda. Felix Valverde Grimaldi y Avda. del Rio",sup:11780},{n:146,nom:"Parque en C/Marques de Mortara",sup:3311}]},{b:"Carcesa",z:[{n:148,nom:"Zona verde entre Avda. del Rio y C/de la Hosteria",sup:11222},{n:149,nom:"Zona verde junto a C/Manga del Matadero",sup:6682},{n:150,nom:"Franja zona verde Avda. Duque Ahumada",sup:3884}]},{b:"Poligono Nueva Ciudad",z:[{n:151,nom:"Parque junto a C/Vasco de Gama",sup:20190},{n:155,nom:"Parque en C/Hernando de Soto",sup:1241},{n:156,nom:"Parque Ronda del Alentejo",sup:4539},{n:157,nom:"Talud verde en Poligono Carrion",sup:4454},{n:158,nom:"Bulevar Avda. de Portugal",sup:2485},{n:175,nom:"Parque Dion Casio",sup:1325},{n:176,nom:"Parque Manuel Pacheco",sup:6617}]},{b:"El Torillo (Sectores Oeste)",z:[{n:184,nom:"Zona verde entre C/Manuel Bermejo Hernandez y Chalets",sup:19010},{n:185,nom:"Zona verde junto Avda. Duque de Ahumada",sup:2563},{n:187,nom:"Zona verde junto C/Juan de Dios Roman Seco",sup:11100},{n:189,nom:"Zona verde Avda. Adolfo Suarez Gonzalez",sup:25714},{n:193,nom:"Mediana Avda. Luis Jacinto Ramallo",sup:2017}]},{b:"La Heredad",z:[{n:196,nom:"Plaza de la Heredad",sup:10450},{n:197,nom:"Franja verde en C/Emila Pardo Bazan",sup:1288},{n:198,nom:"Bulevar en C/Benito Perez Galdos",sup:1065},{n:199,nom:"Parque Emilia Pardo Bazan con C/Jorge Luis Borges",sup:4741},{n:200,nom:"Talud Avda. Jose Saramago de Sousa",sup:11737}]},{b:"Proserpina (Parque Forestal)",z:[{n:235,nom:"Zona Forestal Proserpina",sup:22340}]},{b:"Jardines del Guadiana",z:[{n:236,nom:"Parque Antiguo Ferial",sup:79271},{n:237,nom:"Parque Pan Caliente",sup:90450},{n:238,nom:"Jardin Paseo Alcazaba",sup:7342},{n:239,nom:"Jardin Paseo de Roma",sup:9785},{n:240,nom:"Isla frente Alcazaba",sup:66850},{n:241,nom:"Isla frente Consejeria",sup:44858},{n:242,nom:"Isla junto Puente Nuevo",sup:21710},{n:243,nom:"Zona verdes Palacio de Congresos",sup:10330}]},{b:"Jardines del Albarregas",z:[{n:244,nom:"Parque Barriada de San Juan",sup:17968},{n:245,nom:"Parque de Maria Auxiliadora",sup:15472},{n:246,nom:"Parque Ermita de la Antigua",sup:9348},{n:247,nom:"Zonas Verdes Santa Isabel",sup:5077},{n:248,nom:"Entorno Colegio Antonio Machado",sup:6367},{n:250,nom:"Parque Instituto Albarregas",sup:11228},{n:251,nom:"Margen Dcha. C/Mirandilla - Puente Via de la Plata",sup:51193},{n:252,nom:"Margen Izda. C/Mirandilla - Puente Via de la Plata",sup:30940}]},{b:"Glorietas y Rotondas",z:[{n:301,nom:"Glorieta Patrimonio de la Humanidad",sup:254},{n:303,nom:"Glorieta de Augusto",sup:1134},{n:308,nom:"Glorieta Monumento a la Guardia Civil",sup:2642},{n:309,nom:"Glorieta de las tres fuentes",sup:3483},{n:311,nom:"Glorieta Rafael Ortega",sup:760},{n:319,nom:"Glorieta acceso Puente Lusitania",sup:5281},{n:327,nom:"Glorieta Avda. Duque de Ahumada",sup:2736},{n:341,nom:"Glorieta Avda. del Rio",sup:1256},{n:366,nom:"Medianas Avda. Reina Sofia",sup:2097}]}];
+var STEPS=[{id:"zona",title:"Seleccion de zona",sub:"Catalogo oficial"},{id:"sup",title:"Superficies y elementos",sub:"Inventario basico"},{id:"limp",title:"Diagnostico limpieza",sub:"Estado de limpieza"},{id:"riego",title:"Infraestructura de riego",sub:"Sistema de riego"},{id:"veg",title:"Vegetacion",sub:"Praderas y arbustos"},{id:"arb",title:"Arbolado",sub:"Arboles y zonas forestales"},{id:"mob",title:"Mobiliario y pavimentos",sub:"Equipamiento urbano"},{id:"serv",title:"Servicios e infraestructura",sub:"Fuentes, alumbrado, senalizacion"}];
+var step=0,fd={},zonas=[],recording=false;
+try{zonas=JSON.parse(localStorage.getItem("zvm26")||"[]");}catch(e){}
+function showScreen(id){document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});document.getElementById(id).classList.add("active");}
+function goHome(){showScreen("s-home");renderHome();}
+function startNew(){fd={};step=0;showScreen("s-form");renderStep();}
+function renderHome(){
+  document.getElementById("stat-n").textContent=zonas.length;
+  var list=document.getElementById("zona-list");
+  if(!zonas.length){list.innerHTML='<div class="empty">No hay zonas diagnosticadas aun.<br>Toca "+ Nueva zona" para empezar.</div>';return;}
+  var html="";
+  var recent=zonas.slice().reverse().slice(0,8);
+  recent.forEach(function(z,i){
+    var idx=zonas.length-1-i;
+    html+='<div class="zrow" data-idx="'+idx+'"><div class="zdot"></div><div class="zinfo"><div class="zname">'+(z.zona_nom||"Sin nombre")+(z.zona_num?' <span style="font-family:DM Mono,monospace;font-size:11px;color:#7a9484">N'+z.zona_num+'</span>':'')+'</div><div class="zmeta">'+(z.zona_barrio||"—")+' - '+new Date(z.fecha).toLocaleDateString("es-ES")+'</div></div><span class="zchev">></span></div>';
+  });
+  list.innerHTML=html;
+  list.querySelectorAll(".zrow").forEach(function(row){row.addEventListener("click",function(){fd=Object.assign({},zonas[parseInt(this.dataset.idx)]);showScreen("s-sum");renderSummary();callAI();});});
+}
+function renderStep(){
+  var s=STEPS[step];
+  document.getElementById("f-title").textContent=s.title;
+  document.getElementById("f-sub").textContent=s.sub+" - Paso "+(step+1)+" de "+STEPS.length;
+  document.getElementById("f-badge").textContent=(step+1)+"/"+STEPS.length;
+  document.getElementById("pfill").style.width=(((step+1)/STEPS.length)*100)+"%";
+  var content=document.getElementById("f-content");
+  var builders={zona:buildZona,sup:buildSup,limp:buildLimp,riego:buildRiego,veg:buildVeg,arb:buildArb,mob:buildMob,serv:buildServ};
+  content.innerHTML=builders[s.id]();
+  content.scrollTop=0;
+  bindStep(s.id);
+  var nav=document.getElementById("f-nav");
+  nav.innerHTML="";
+  if(step>0){var bb=document.createElement("button");bb.className="bbtn";bb.textContent="Atras";bb.onclick=function(){step--;renderStep();};nav.appendChild(bb);}
+  var nb=document.createElement("button");nb.className="gbtn";var isLast=step===STEPS.length-1;nb.textContent=isLast?"Generar diagnostico":"Siguiente";nb.onclick=isLast?finish:function(){step++;renderStep();};nav.appendChild(nb);
+}
+function buildPickerHTML(q){
+  q=q.toLowerCase().trim();var h="";
+  ZONAS.forEach(function(g){
+    var zf=g.z.filter(function(z){return !q||z.nom.toLowerCase().indexOf(q)>-1||String(z.n).indexOf(q)>-1||g.b.toLowerCase().indexOf(q)>-1;});
+    if(!zf.length)return;
+    h+='<div class="pglabel">'+g.b+"</div>";
+    zf.forEach(function(z){h+='<div class="pitem'+(fd.zona_num===z.n?" on":"")+'" data-n="'+z.n+'" data-nom="'+z.nom+'" data-b="'+g.b+'" data-sup="'+z.sup+'"><span class="pnum">'+z.n+'</span><span class="pname">'+z.nom+'</span><span class="psup">'+(z.sup?z.sup.toLocaleString("es-ES")+" m2":"")+"</span></div>";});
+  });
+  return h||'<div style="padding:16px;text-align:center;font-size:13px;color:#7a9484">Sin resultados.</div>';
+}
+function buildZona(){
+  var h="";
+  if(fd.zona_nom){
+    h+='<div class="zpill"><div class="zpinfo"><span class="zpbadge">N '+( fd.zona_num||"-")+'</span><div class="zpnom">'+fd.zona_nom+'</div><div class="zpbarrio">'+(fd.zona_barrio||"")+'</div>'+(fd.zona_sup?'<div class="zpsup">'+Number(fd.zona_sup).toLocaleString("es-ES")+" m2</div>":"")+'</div><button class="zpclear" id="btn-clear-zona">X</button></div>';
+    h+='<button class="chlink" id="btn-change-zona">Cambiar zona</button>';
+    h+='<div class="field"><label class="flabel">Nota adicional o zona nueva no catalogada</label><textarea class="ftarea" id="f-obs-zona" placeholder="Si es zona nueva o quieres anadir contexto...">'+(fd.obs_zona||"")+"</textarea></div>";
+  }else{
+    h+='<div class="field"><label class="flabel">Busca por nombre, numero o barrio</label><div class="swrap"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="zona-q" placeholder="ej. Parque Rambla, 18, Centro..."></div><div class="picker" id="zona-picker">'+buildPickerHTML("")+'</div><p class="hint">Si la zona no aparece, selecciona la mas cercana y aniade una nota.</p></div>';
+  }
+  return h;
+}
+function bindStep(id){
+  if(id==="zona"){
+    var cb=document.getElementById("btn-clear-zona");if(cb)cb.onclick=function(){fd.zona_num=null;fd.zona_nom=null;fd.zona_barrio=null;fd.zona_sup=null;renderStep();};
+    var chb=document.getElementById("btn-change-zona");if(chb)chb.onclick=function(){fd.zona_num=null;fd.zona_nom=null;fd.zona_barrio=null;fd.zona_sup=null;renderStep();};
+    var oz=document.getElementById("f-obs-zona");if(oz)oz.oninput=function(){fd.obs_zona=this.value;};
+    var si=document.getElementById("zona-q");
+    if(si)si.oninput=function(){var p=document.getElementById("zona-picker");if(p){p.innerHTML=buildPickerHTML(this.value);bindPickerItems();}};
+    bindPickerItems();
+  }
+  document.querySelectorAll(".scbtn").forEach(function(btn){
+    btn.onclick=function(){var k=this.dataset.key,v=parseInt(this.dataset.val);fd[k]=v;document.querySelectorAll('.scbtn[data-key="'+k+'"]').forEach(function(b){b.classList.remove("on");});this.classList.add("on");};
+    if(fd[btn.dataset.key]==btn.dataset.val)btn.classList.add("on");
+  });
+  document.querySelectorAll(".ynbtn").forEach(function(btn){
+    btn.onclick=function(){var k=this.dataset.key,v=this.dataset.val;fd[k]=v;document.querySelectorAll('.ynbtn[data-key="'+k+'"]').forEach(function(b){b.classList.remove("ys","ns");});this.classList.add(v==="si"?"ys":"ns");};
+    var v=fd[btn.dataset.key];if(v==="si"&&btn.dataset.val==="si")btn.classList.add("ys");if(v==="no"&&btn.dataset.val==="no")btn.classList.add("ns");
+  });
+  document.querySelectorAll(".chip").forEach(function(chip){
+    chip.onclick=function(){var k=this.dataset.key,v=this.dataset.val,multi=this.dataset.multi==="1";if(multi){if(!Array.isArray(fd[k]))fd[k]=[];var idx=fd[k].indexOf(v);if(idx>-1){fd[k].splice(idx,1);this.classList.remove("on");}else{fd[k].push(v);this.classList.add("on");}}else{document.querySelectorAll('.chip[data-key="'+k+'"]').forEach(function(c){c.classList.remove("on");});fd[k]=v;this.classList.add("on");}};
+    var k=chip.dataset.key,v=chip.dataset.val;if(Array.isArray(fd[k])&&fd[k].indexOf(v)>-1)chip.classList.add("on");if(!Array.isArray(fd[k])&&fd[k]===v)chip.classList.add("on");
+  });
+  document.querySelectorAll(".finput[data-key],.ftxtinp[data-key]").forEach(function(inp){inp.value=fd[inp.dataset.key]||"";inp.oninput=function(){fd[this.dataset.key]=this.value;};});
+  document.querySelectorAll(".ftarea[data-key]").forEach(function(ta){ta.value=fd[ta.dataset.key]||"";ta.oninput=function(){fd[this.dataset.key]=this.value;};});
+  document.querySelectorAll(".micbtn").forEach(function(btn){btn.onclick=function(){toggleMic(this.dataset.key);};});
+  document.querySelectorAll(".photo-file").forEach(function(inp){inp.onchange=function(){addPhoto(this.dataset.key,this);};});
+}
+function bindPickerItems(){document.querySelectorAll("#zona-picker .pitem").forEach(function(item){item.onclick=function(){fd.zona_num=parseInt(this.dataset.n);fd.zona_nom=this.dataset.nom;fd.zona_barrio=this.dataset.b;fd.zona_sup=parseInt(this.dataset.sup)||0;fd.nombre=fd.zona_nom;renderStep();};});}
+function hScale(key,label){var v=fd[key]||0;var h='<div class="field"><label class="flabel">'+label+'</label><div class="scrow"><span class="sclbl">Bajo</span><div class="scbtns">';for(var i=1;i<=5;i++)h+='<button class="scbtn'+(v==i?" on":"")+'" data-key="'+key+'" data-val="'+i+'">'+i+"</button>";h+='</div><span class="sclbl" style="text-align:right">Alto</span></div></div>';return h;}
+function hYN(key,label){var v=fd[key];return'<div class="field"><label class="flabel">'+label+'</label><div class="ynrow"><button class="ynbtn'+(v==="si"?" ys":"")+'" data-key="'+key+'" data-val="si">Si</button><button class="ynbtn'+(v==="no"?" ns":"")+'" data-key="'+key+'" data-val="no">No</button></div></div>';}
+function hChips(key,label,opts,multi){var sel=Array.isArray(fd[key])?fd[key]:(fd[key]?[fd[key]]:[]);var h='<div class="field"><label class="flabel">'+label+'</label><div class="chips">';opts.forEach(function(o){var on=sel.indexOf(o)>-1?" on":"";h+='<div class="chip'+on+'" data-key="'+key+'" data-val="'+o+'" data-multi="'+(multi?"1":"0")+'">'+o+"</div>";});h+="</div></div>";return h;}
+function hNum(key,label,ph){return'<div class="field"><label class="flabel">'+label+'</label><input class="finput" type="number" min="0" placeholder="'+(ph||"0")+'" data-key="'+key+'"></div>';}
+function hTxt(key,label,ph){return'<div class="field"><label class="flabel">'+label+'</label><input class="finput ftxtinp" type="text" placeholder="'+(ph||"")+'" data-key="'+key+'"></div>';}
+function hMic(key,label){return'<div class="field"><label class="flabel">'+label+'</label><button class="micbtn" data-key="'+key+'"><span class="mico">mic</span><span>Toca para dictar por voz</span></button><textarea class="ftarea" data-key="'+key+'" placeholder="O escribe aqui..."></textarea></div>';}
+function hPhoto(key,label){var photos=fd["ph_"+key]||[];var h='<div class="field"><label class="flabel">'+label+'</label><div class="pgrid" id="pg-'+key+'">';photos.forEach(function(p){h+='<img src="'+p+'" class="pthumb">';});h+='<label><div class="paddbtn">cam</div><input type="file" accept="image/*" capture="environment" class="photo-file" data-key="'+key+'" style="display:none"></label></div></div>';return h;}
+function buildSup(){return hScale("uso_publico","Nivel de uso publico")+hNum("sup_cesped","Superficie cesped (%)","0-100")+hNum("n_arboles","N arboles en zona")+hTxt("esp_arbol1","Especie arbol principal","ej. Platanus hispanica")+hNum("n_arbustos","N arbustos individuales")+hNum("n_papeleras","N papeleras")+hNum("n_bancos","N bancos / mesas")+hChips("acceso","Acceso de vehiculos",["Todo tipo de vehiculos","Furgonetas / ligeros","Sin acceso"],false);}
+function buildLimp(){return hScale("limpieza","Nivel de limpieza general")+hChips("prob_limpieza","Problematicas observadas",["Basura general","Excrementos mascotas","Botellon","Enseres","Residuos peligrosos","Plagas","Residuos vegetales","Grafitis","Papeleras llenas","Escombros"],true)+hMic("obs_limpieza","Observaciones (voz o texto)")+hPhoto("limpieza","Fotos de deficiencias");}
+function buildRiego(){return hYN("tiene_riego","Existe infraestructura de riego?")+hChips("tipo_riego","Tipo de riego",["Aspersion","Difusion","Goteo","Manual"],true)+hChips("prob_riego","Problematicas de riego",["Fugas / roturas","Distribucion desigual","Sistema obsoleto","Obstruccion","Vandalismo","Uso excesivo"],true)+hMic("obs_riego","Observaciones de riego");}
+function buildVeg(){return hYN("tiene_cesped","Existe pradera o cesped?")+hScale("cons_cesped","Nivel de conservacion de la pradera")+hChips("prob_cesped","Problematicas pradera",["Compactacion","Riego excesivo","Riego insuficiente","Plagas / enfermedades","Maleza","Erosion","Calvas / baja densidad","Riesgo incendio"],true)+hYN("tiene_arbustos","Existen elementos arbustivos?")+hChips("prob_arbustos","Problematicas arbustos",["Poda mal ejecutada","Falta poda","Danos estructurales","Plagas","Marras","Malas hierbas","Envejecidos","Malla antihierba visible"],true)+hMic("obs_veg","Observaciones vegetacion");}
+function buildArb(){return hYN("tiene_arbolado","Existe arbolado en zona verde?")+hScale("cons_arbolado","Nivel de conservacion del arbolado")+hChips("prob_arbolado","Problematicas arbolado",["Ramas secas / perchas","Clorosis","Defoliacion prematura","Marras","Interferencias","Riesgo mecanico","Hongos xilofagos","Cavidades / oquedades"],true)+hYN("tiene_forestal","Existen zonas forestales?")+hChips("prob_forestal","Problematicas forestales",["Densidad excesiva","Plagas / enfermedades","Erosion raices","Compactacion pisoteo","Riesgo incendio","Vertidos","Vandalismo"],true)+hPhoto("arbolado","Fotos arbolado");}
+function buildMob(){return hYN("tiene_juegos","Existen areas de juego infantil?")+hScale("cons_juegos","Estado de conservacion juegos")+hChips("prob_juegos","Problematicas juegos",["Riesgo atrapamiento","Cimentaciones expuestas","Desgaste piezas","Vandalismo","Senaletia ilegible","Compactacion superficie"],true)+hYN("tiene_deportivo","Existen areas deportivas / biosaludables?")+hScale("cons_mobiliario","Conservacion mobiliario urbano")+hScale("cons_pavimentos","Conservacion pavimentos")+hChips("prob_pav","Problematicas pavimentos",["Levantamiento por raices","Grietas / fisuras","Encharcamientos","Malas hierbas en juntas","Verdin / musgo","Desprendimientos"],true);}
+function buildServ(){return hYN("tiene_fuentes_orn","Existen fuentes ornamentales?")+hScale("cons_fuentes_orn","Conservacion fuentes ornamentales")+hYN("tiene_fuentes_beb","Existen fuentes bebederas?")+hScale("cons_fuentes_beb","Conservacion fuentes bebederas")+hYN("tiene_alumbrado","Existe red de alumbrado?")+hScale("cons_alumbrado","Conservacion del alumbrado")+hYN("tiene_senalizacion","Existe carteleria / senalizacion?")+hMic("obs_general","Observaciones generales finales");}
+function toggleMic(key){if(!("webkitSpeechRecognition"in window||"SpeechRecognition"in window)){alert("Tu navegador no soporta dictado por voz.");return;}if(recording){if(window._sr)window._sr.stop();return;}recording=true;var btn=document.querySelector('.micbtn[data-key="'+key+'"]');var ta=document.querySelector('.ftarea[data-key="'+key+'"]');if(btn){btn.classList.add("rec");btn.querySelectorAll("span")[1].textContent="Escuchando... (toca para parar)";}var SR=window.SpeechRecognition||window.webkitSpeechRecognition;var r=new SR();r.lang="es-ES";r.continuous=true;r.interimResults=true;window._sr=r;r.onresult=function(e){var t="";for(var i=e.resultIndex;i<e.results.length;i++)t+=e.results[i][0].transcript;if(ta){ta.value=t;fd[key]=t;}};r.onend=function(){recording=false;if(btn){btn.classList.remove("rec");btn.querySelectorAll("span")[1].textContent="Toca para dictar por voz";}if(ta)fd[key]=ta.value;};r.start();}
+function addPhoto(key,input){if(!input.files||!input.files[0])return;var reader=new FileReader();reader.onload=function(e){if(!fd["ph_"+key])fd["ph_"+key]=[];fd["ph_"+key].push(e.target.result);var grid=document.getElementById("pg-"+key);if(grid){var img=document.createElement("img");img.src=e.target.result;img.className="pthumb";grid.insertBefore(img,grid.lastElementChild);}};reader.readAsDataURL(input.files[0]);}
+function finish(){fd.fecha=new Date().toISOString();showScreen("s-sum");renderSummary();callAI();}
+function getArr(k){return Array.isArray(fd[k])?fd[k]:(fd[k]?[fd[k]]:[]);}
+function renderSummary(){
+  document.getElementById("sum-sub").textContent=fd.zona_nom||"Sin nombre";
+  var meta=document.getElementById("sum-meta");
+  var html='<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px"><div style="flex:1"><div style="font-size:17px;font-weight:600">'+(fd.zona_nom||"Zona sin nombre")+'</div><div style="font-size:13px;color:#4a6454;margin-top:2px">'+(fd.zona_barrio||"—")+"</div>"+(fd.obs_zona?'<div style="font-size:12px;color:#7a9484;margin-top:4px;font-style:italic">'+fd.obs_zona+"</div>":"")+"</div>"+(fd.zona_num?'<span style="background:#1d9e75;color:#fff;font-size:12px;font-weight:600;font-family:DM Mono,monospace;padding:3px 10px;border-radius:20px;white-space:nowrap">N '+fd.zona_num+"</span>":"")+'</div><div class="smeta">'+(fd.zona_sup?'<span class="smitem">'+Number(fd.zona_sup).toLocaleString("es-ES")+" m2</span>":"")+(fd.uso_publico?'<span class="smitem">Uso: '+fd.uso_publico+"/5</span>":"")+(fd.n_arboles?'<span class="smitem">'+fd.n_arboles+" arboles</span>":"")+(fd.limpieza?'<span class="smitem">Limpieza: '+fd.limpieza+"/5</span>":"")+'<span class="smitem">'+new Date(fd.fecha).toLocaleDateString("es-ES")+"</span></div>";
+  meta.innerHTML=html;
+  var allProbs=[].concat(getArr("prob_limpieza"),getArr("prob_riego"),getArr("prob_cesped"),getArr("prob_arbustos"),getArr("prob_arbolado"),getArr("prob_forestal"),getArr("prob_juegos"),getArr("prob_pav"));
+  document.getElementById("sum-probs").innerHTML=allProbs.length?allProbs.map(function(p){return'<span class="tag">'+p+"</span>";}).join(""):'<span style="font-size:13px;color:#7a9484">Sin problematicas registradas</span>';
+  document.getElementById("sum-props").innerHTML='<span style="font-size:13px;color:#7a9484;font-style:italic">Generando con IA...</span>';
+}
+async function callAI(){
+  var box=document.getElementById("ai-box");var props=document.getElementById("sum-props");
+  box.innerHTML='<div class="aihdr">Analisis IA</div><div class="dots"><span></span><span></span><span></span></div>';
+  var prompt="Eres experto en gestion de zonas verdes urbanas. Analiza este diagnostico en Merida (Badajoz):\nZona N "+(fd.zona_num||"Nueva")+": "+(fd.zona_nom||"Sin nombre")+"\nBarrio: "+(fd.zona_barrio||"—")+" - Superficie: "+(fd.zona_sup?Number(fd.zona_sup).toLocaleString("es-ES")+" m2":"—")+"\n"+(fd.obs_zona?"Nota zona: "+fd.obs_zona+"\n":"")+"Uso publico: "+(fd.uso_publico||"?")+" - Limpieza: "+(fd.limpieza||"?")+"\nArboles: "+(fd.n_arboles||0)+" ("+(fd.esp_arbol1||"—")+")\nRiego: "+(fd.tiene_riego==="si"?"Si ("+getArr("tipo_riego").join(", ")+")":"No")+"\nProb. limpieza: "+(getArr("prob_limpieza").join(", ")||"Ninguna")+"\nProb. riego: "+(getArr("prob_riego").join(", ")||"Ninguna")+"\nProb. pradera: "+(getArr("prob_cesped").join(", ")||"Ninguna")+"\nProb. arbustos: "+(getArr("prob_arbustos").join(", ")||"Ninguna")+"\nProb. arbolado: "+(getArr("prob_arbolado").join(", ")||"Ninguna")+"\nProb. forestales: "+(getArr("prob_forestal").join(", ")||"Ninguna")+"\nProb. juegos: "+(getArr("prob_juegos").join(", ")||"Ninguna")+"\nProb. pavimentos: "+(getArr("prob_pav").join(", ")||"Ninguna")+"\nObs: "+([fd.obs_general,fd.obs_limpieza,fd.obs_veg].filter(Boolean).join(" / ")||"—")+"\n\nGenera:\n1. DIAGNOSTICO NARRATIVO breve (3-4 frases).\n2. Lista PROPUESTAS: con max. 6 lineas: - [Prioridad Alta/Media/Baja] Propuesta\nResponde en espanol profesional. Separa con PROPUESTAS: en linea propia.";
+  try{
+    var res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,messages:[{role:"user",content:prompt}]})});
+    var data=await res.json();
+    var text=(data.content||[]).map(function(i){return i.text||"";}).join("");
+    var parts=text.split("PROPUESTAS:");
+    var diag=parts[0].replace(/DIAGNOSTICO[:\s]*/i,"").trim();var prop=parts[1]?parts[1].trim():"";
+    box.innerHTML='<div class="aihdr">Analisis IA</div><p>'+diag.replace(/\n/g,"<br>")+"</p>";
+    fd.ai_diag=diag;fd.ai_prop=prop;
+    if(prop){props.innerHTML=prop.split("\n").filter(function(l){return l.trim().indexOf("-")===0;}).map(function(l){var t=l.replace(/^-\s*/,"");var isA=t.indexOf("Alta")>-1;var isM=t.indexOf("Media")>-1;return'<div class="propitem"><span class="pbadge '+(isA?"pbalta":isM?"pbmedia":"pbbaja")+'">'+(isA?"Alta":isM?"Media":"Baja")+"</span><span>"+t.replace(/\[Prioridad\s*(Alta|Media|Baja)\]\s*/i,"")+"</span></div>";}).join("");}
+  }catch(e){box.innerHTML='<div class="aihdr">Analisis IA</div><p style="color:#7a9484;font-style:italic">Sin conexion. El diagnostico se guardara con los datos capturados.</p>';}
+}
+function saveAndHome(){zonas.push(Object.assign({},fd));try{localStorage.setItem("zvm26",JSON.stringify(zonas));}catch(e){}goHome();}
+function exportPDF(){
+  var allProbs=[].concat(getArr("prob_limpieza"),getArr("prob_riego"),getArr("prob_cesped"),getArr("prob_arbolado"),getArr("prob_juegos"),getArr("prob_pav"));
+  var w=window.open("","_blank");
+  w.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Diagnostico N"+fd.zona_num+"</title><style>body{font-family:Arial,sans-serif;max-width:800px;margin:40px auto;color:#1a2e1a;padding:0 20px}h1{color:#0f6e56;border-bottom:3px solid #1d9e75;padding-bottom:10px;margin-bottom:20px}h2{color:#0f6e56;margin-top:24px;font-size:15px;text-transform:uppercase}.meta{background:#e1f5ee;border-radius:10px;padding:16px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:12px}.mi{font-size:13px}.mi strong{display:block;font-size:10px;color:#7a9484;text-transform:uppercase;margin-bottom:2px}.nb{background:#0f6e56;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:monospace}.aibox{background:#e1f5ee;border:1px solid #9fe1cb;border-radius:10px;padding:16px;margin:16px 0}.tag{display:inline-block;background:#faeeda;color:#ba7517;padding:3px 10px;border-radius:20px;margin:3px;font-size:12px;font-weight:500}.prop{display:flex;gap:8px;margin:8px 0;font-size:14px;align-items:flex-start}.pb{padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;margin-top:2px}.alta{background:#fcebeb;color:#a32d2d}.media{background:#faeeda;color:#ba7517}.baja{background:#e1f5ee;color:#0f6e56}.footer{margin-top:48px;font-size:11px;color:#7a9484;border-top:1px solid #e1f5ee;padding-top:12px;text-align:center}@media print{body{margin:20px}}</style></head><body>");
+  w.document.write("<h1>Diagnostico Zona Verde - N "+(fd.zona_num||"Nueva zona")+"</h1><div class='meta'><div class='mi' style='flex:1.5'><strong>Nombre</strong>"+(fd.zona_nom||"—")+"</div><div class='mi'><strong>Barrio</strong>"+(fd.zona_barrio||"—")+"</div><div class='mi'><strong>N Catalogo</strong><span class='nb'>"+(fd.zona_num||"Nueva")+"</span></div><div class='mi'><strong>Superficie</strong>"+(fd.zona_sup?Number(fd.zona_sup).toLocaleString("es-ES")+" m2":"—")+"</div><div class='mi'><strong>Fecha</strong>"+new Date(fd.fecha).toLocaleDateString("es-ES",{day:"2-digit",month:"long",year:"numeric"})+"</div><div class='mi'><strong>Uso publico</strong>"+(fd.uso_publico||"—")+"/5</div><div class='mi'><strong>Limpieza</strong>"+(fd.limpieza||"—")+"/5</div><div class='mi'><strong>N arboles</strong>"+(fd.n_arboles||0)+(fd.esp_arbol1?" ("+fd.esp_arbol1+")":"")+"</div></div>");
+  if(fd.obs_zona)w.document.write("<p style='font-style:italic;font-size:13px;color:#7a9484;margin-bottom:16px'>Nota: "+fd.obs_zona+"</p>");
+  if(fd.ai_diag)w.document.write("<div class='aibox'><h2>Diagnostico IA</h2><p style='font-size:14px;color:#085041'>"+fd.ai_diag.replace(/\n/g,"<br>")+"</p></div>");
+  w.document.write("<h2>Problematicas detectadas</h2><div>"+(allProbs.length?allProbs.map(function(p){return"<span class='tag'>"+p+"</span>";}).join(""):"<em style='color:#7a9484'>Sin problematicas registradas</em>")+"</div>");
+  if(fd.ai_prop){w.document.write("<h2>Propuestas de mejora</h2>");fd.ai_prop.split("\n").filter(function(l){return l.trim().indexOf("-")===0;}).forEach(function(l){var t=l.replace(/^-\s*/,"");var isA=t.indexOf("Alta")>-1;var isM=t.indexOf("Media")>-1;w.document.write("<div class='prop'><span class='pb "+(isA?"alta":isM?"media":"baja")+"'>"+(isA?"Alta":isM?"Media":"Baja")+"</span><span>"+t.replace(/\[Prioridad\s*(Alta|Media|Baja)\]\s*/i,"")+"</span></div>");});}
+  var obs=[fd.obs_general,fd.obs_limpieza,fd.obs_veg].filter(Boolean).join("<br>");
+  if(obs)w.document.write("<h2>Observaciones</h2><p style='font-size:14px'>"+obs+"</p>");
+  w.document.write("<div class='footer'>Diagnostico Zonas Verdes Merida 2026 - Ayuntamiento de Merida</div><scr"+"ipt>window.onload=function(){window.print();}<\/scr"+"ipt></body></html>");
+  w.document.close();
+}
+function exportCSV(){var h=["N Zona","Nombre","Barrio","Superficie m2","Fecha","Uso publico","Limpieza","N arboles","Especie arbol","N arbustos","N papeleras","N bancos","Acceso","Riego","Tipo riego","Prob. limpieza","Prob. riego","Prob. pradera","Prob. arbustos","Prob. arbolado","Prob. forestales","Prob. juegos","Prob. pavimentos","Fuentes orn.","Fuentes beb.","Alumbrado","Senalizacion","Diagnostico IA","Propuestas IA","Observaciones"];var obs=[fd.obs_general,fd.obs_limpieza,fd.obs_veg].filter(Boolean).join(" | ");var r=[fd.zona_num||"",fd.zona_nom||"",fd.zona_barrio||"",fd.zona_sup||"",new Date(fd.fecha||Date.now()).toLocaleDateString("es-ES"),fd.uso_publico||"",fd.limpieza||"",fd.n_arboles||"",fd.esp_arbol1||"",fd.n_arbustos||"",fd.n_papeleras||"",fd.n_bancos||"",fd.acceso||"",fd.tiene_riego||"",getArr("tipo_riego").join("; "),getArr("prob_limpieza").join("; "),getArr("prob_riego").join("; "),getArr("prob_cesped").join("; "),getArr("prob_arbustos").join("; "),getArr("prob_arbolado").join("; "),getArr("prob_forestal").join("; "),getArr("prob_juegos").join("; "),getArr("prob_pav").join("; "),fd.tiene_fuentes_orn||"",fd.tiene_fuentes_beb||"",fd.tiene_alumbrado||"",fd.tiene_senalizacion||"",fd.ai_diag||"",fd.ai_prop||"",obs];var csv="\uFEFF"+h.join(",")+"\n"+r.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(",");var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));a.download="diagnostico_zona"+(fd.zona_num||"nueva")+"_"+new Date().toISOString().slice(0,10)+".csv";a.click();}
+document.getElementById("btn-nueva").onclick=startNew;
+document.getElementById("btn-back-form").onclick=goHome;
+document.getElementById("btn-back-sum").onclick=function(){showScreen("s-form");renderStep();};
+document.getElementById("btn-pdf").onclick=exportPDF;
+document.getElementById("btn-csv").onclick=exportCSV;
+document.getElementById("btn-save").onclick=saveAndHome;
+renderHome();
+</script>
+</body>
+</html>
